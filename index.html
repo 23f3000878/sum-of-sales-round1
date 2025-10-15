@@ -1,53 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sales Summary 2025</title>
-  <!-- Load Bootstrap 5 from jsdelivr -->
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    /* Add some custom styles */
-    body {
-      margin: 20px;
-    }
-    #total-sales {
-      font-size: 2rem;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Sales</title>
+    <!-- Bootstrap CSS from CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1 class="text-center my-4">Sales Summary 2025</h1>
-    <div class="alert alert-info text-center">
-      Total Sales: <span id="total-sales">Loading...</span>
+
+    <div class="container">
+        <h1 class="my-4">Product Sales</h1>
+        <table id="product-sales" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Sales</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Product rows will be dynamically inserted here -->
+            </tbody>
+        </table>
+        <p id="total-sales" class="font-weight-bold">Total Sales: </p>
     </div>
-  </div>
 
-  <script>
-    // Function to fetch and parse CSV data
-    async function fetchCsvData() {
-      const csvUrl = 'data:text/csv;base64,cHJvZHVjdCxzYWxlcwpMYXB0b3AsMTUwMApQaG9uZSw4MDAKU2VydmVyLDMwMDA=';
-      const response = await fetch(csvUrl);
-      const csvText = await response.text();
+    <script>
+        // CSV Data URL
+        const csvURL = 'data:text/csv;base64,cHJvZHVjdCxzYWxlcwpMYXB0b3AsMTUwMApQaG9uZSw4MDAKU2VydmVyLDMwMDA=';
 
-      // Parse CSV data
-      const rows = csvText.trim().split('\n').slice(1); // Skip header
-      let totalSales = 0;
+        // Function to process CSV data
+        function processCSV(data) {
+            const rows = data.trim().split('\n');
+            const tableBody = document.querySelector('#product-sales tbody');
+            let totalSales = 0;
 
-      // Sum up sales column
-      for(let row of rows) {
-        const columns = row.split(',');
-        totalSales += parseFloat(columns[1]); // Add sales value
-      }
+            rows.slice(1).forEach(row => {
+                const [product, sales] = row.split(',');
+                totalSales += parseInt(sales, 10);
 
-      // Display total sales
-      document.getElementById('total-sales').textContent = totalSales;
-    }
+                // Create a new table row
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${product}</td><td>${sales}</td>`;
+                tableBody.appendChild(tr);
+            });
 
-    // Run the function to fetch and display data
-    fetchCsvData();
-  </script>
+            // Update total sales
+            document.getElementById('total-sales').textContent += totalSales;
+        }
+
+        // Fetch and process the CSV data
+        fetch(csvURL)
+            .then(response => response.text())
+            .then(data => processCSV(data))
+            .catch(error => console.error('Error fetching the CSV data:', error));
+    </script>
+
 </body>
 </html>
