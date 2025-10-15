@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Summary 2025</title>
+  <!-- Load Bootstrap 5 from jsdelivr -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Add some custom styles */
+    body {
+      margin: 20px;
+    }
+    #total-sales {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-center my-4">Sales Summary 2025</h1>
+    <div class="alert alert-info text-center">
+      Total Sales: <span id="total-sales">Loading...</span>
+    </div>
+  </div>
+
+  <script>
+    // Function to fetch and parse CSV data
+    async function fetchCsvData() {
+      const csvUrl = 'data:text/csv;base64,cHJvZHVjdCxzYWxlcwpMYXB0b3AsMTUwMApQaG9uZSw4MDAKU2VydmVyLDMwMDA=';
+      const response = await fetch(csvUrl);
+      const csvText = await response.text();
+
+      // Parse CSV data
+      const rows = csvText.trim().split('\n').slice(1); // Skip header
+      let totalSales = 0;
+
+      // Sum up sales column
+      for(let row of rows) {
+        const columns = row.split(',');
+        totalSales += parseFloat(columns[1]); // Add sales value
+      }
+
+      // Display total sales
+      document.getElementById('total-sales').textContent = totalSales;
+    }
+
+    // Run the function to fetch and display data
+    fetchCsvData();
+  </script>
+</body>
+</html>
